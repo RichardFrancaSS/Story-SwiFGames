@@ -1,0 +1,14 @@
+C:\Projetos C#\SwiFGames\SwiFGames\bin\Debug\net7.0\SwiFGames.exe
+C:\Projetos C#\SwiFGames\SwiFGames\bin\Debug\net7.0\SwiFGames.deps.json
+C:\Projetos C#\SwiFGames\SwiFGames\bin\Debug\net7.0\SwiFGames.runtimeconfig.json
+C:\Projetos C#\SwiFGames\SwiFGames\bin\Debug\net7.0\SwiFGames.dll
+C:\Projetos C#\SwiFGames\SwiFGames\bin\Debug\net7.0\SwiFGames.pdb
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.AssemblyInfoInputs.cache
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.AssemblyInfo.cs
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.csproj.CoreCompileInputs.cache
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.dll
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\refint\SwiFGames.dll
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.pdb
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\SwiFGames.genruntimeconfig.cache
+C:\Projetos C#\SwiFGames\SwiFGames\obj\Debug\net7.0\ref\SwiFGames.dll
