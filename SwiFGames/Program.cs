@@ -142,11 +142,12 @@ namespace SwiFGames
                         }
                         else if (user.Category == customer)
                         {
+                            Customer client = new Customer(user.UserId, user.Name, user.Email, user.Phone, user.Password, user.Category);
                             Console.Clear();
                             MainTitle();
                             Console.WriteLine();
                             FormatTitles("Customer Menu");
-                            CustomerMenu(catalog);
+                            CustomerMenu(catalog, client);
                         }
                     }
                     else
@@ -245,7 +246,7 @@ namespace SwiFGames
             Console.Clear();
 
         }
-        public static void CustomerMenu(Catalog catalog)
+        public static void CustomerMenu(Catalog catalog, Customer client)
         {
             Console.WriteLine();
             Console.WriteLine("1 - Ver Catalogo\n2 - Ver Pedidos\n3 - Histórico de Compras\n");
@@ -257,12 +258,29 @@ namespace SwiFGames
                 case 1:
                     Console.Clear();
                     MainTitle();
-                    FormatTitles("Catalogo da Loja");
+                    FormatTitles("CATÁLOGO DA LOJA");
                     Console.WriteLine(catalog);
+
+                    Console.WriteLine();
+                    FormatTitles("Deseja fazer um pedido? (s/n)");
+                    Console.WriteLine();
+                    Console.Write("Digite a opção desejada: ");
+                    char op = char.Parse(Console.ReadLine()!);
+                    if (op == 's')
+                    {
+                        Console.Clear();
+                        MainTitle();
+                        RegisterOrder(catalog, client);
+                    }
+                    else if (op == 'n')
+                    {
+                        Console.Clear();
+                        MainTitle();
+                        CustomerMenu(catalog, client);
+                    }
                     break;
                 case 2:
 
-                    RegisterOrder(catalog);
                     break;
             }
         }
@@ -277,34 +295,9 @@ namespace SwiFGames
             catalog.AddToTheCatalog(p3);
             catalog.AddToTheCatalog(p4);
         }
-        public static void RegisterOrder(Catalog catalog)
+        public static void RegisterOrder(Catalog catalog, Customer client)
         {
-            Console.Clear();
-            MainTitle();
-            Console.WriteLine();
-            FormatTitles("Dejesa ver o Catologo? s/n");
-            char optionRegister = char.Parse(Console.ReadLine()!);
-
-            if (optionRegister == 's')
-            {
-                Console.Clear();
-                MainTitle();
-                FormatTitles("Catalogo da Loja");
-
-            }
-            Console.WriteLine();
-            FormatTitles("Deseja fazer um Pedido? s/n");
-            optionRegister = char.Parse(Console.ReadLine()!);
-            if (optionRegister == 's')
-            {
-                //pendente para o proximo encontro
-            }
-            else
-            {
-                Console.Clear();
-                MainTitle();
-                CustomerMenu(catalog);
-            }
+            Console.WriteLine("Registro");
         }
     }
 

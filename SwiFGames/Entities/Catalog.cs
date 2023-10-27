@@ -1,4 +1,8 @@
-﻿namespace SwiFGames.Entities
+﻿using System.Text;
+using System.Globalization;
+
+namespace SwiFGames.Entities
+   
 {
     internal class Catalog
     {
