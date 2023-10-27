@@ -1,4 +1,6 @@
 ﻿using SwiFGames.Entities;
+using System.Globalization;
+
 namespace SwiFGames
 {
     internal class Program
@@ -286,10 +288,10 @@ namespace SwiFGames
         }
         public static void RegisterProductInCatalogManually(Catalog catalog)
         {
-            Product p1 = new Product(1, "God Of War 1", "God 4 Para todos os amantes de Jogos Nordicos", 550.00);
-            Product p2 = new Product(2, "The Last of US", "Zumbis e Terror", 600.00);
-            Product p3 = new Product(3, "Resident Evill Village", "MEDO MEDO MEDO MEDO MEDO MEDO MEDO!!!", 700.00);
-            Product p4 = new Product(4, "Fifa 24", "Futebol de cria", 800.00);
+            Product p1 = new Product(1, "God Of War 1", "God 4 Para todos os amantes de Jogos Nordicos", 550.00, 1);
+            Product p2 = new Product(2, "The Last of US", "Zumbis e Terror", 600.00, 1);
+            Product p3 = new Product(3, "Resident Evill Village", "MEDO MEDO MEDO MEDO MEDO MEDO MEDO!!!", 700.00, 1);
+            Product p4 = new Product(4, "Fifa 24", "Futebol de cria", 800.00, 1);
             catalog.AddToTheCatalog(p1);
             catalog.AddToTheCatalog(p2);
             catalog.AddToTheCatalog(p3);
@@ -297,7 +299,47 @@ namespace SwiFGames
         }
         public static void RegisterOrder(Catalog catalog, Customer client)
         {
-            Console.WriteLine("Registro");
+            char controle;
+            Console.Write("Deseja selecionar um produto da lista? (s/n): ");
+            Console.WriteLine();
+            Console.Write("Selecione a opção desejada: ");
+            controle = char.Parse(Console.ReadLine()!);
+            Product f;
+            Order order = new Order();
+            while (controle == 's')
+            {
+
+                Console.WriteLine();
+                Console.Write("Digite o ID do Produto escolhido: ");
+                int idproduct = int.Parse(Console.ReadLine()!);
+
+                f = catalog.products.FirstOrDefault(x => x.ProductId == idproduct)!;
+                Console.WriteLine();
+                Console.Write("Digite a quantidade do produto: ");
+                int quantity = int.Parse(Console.ReadLine()!);
+                if (f != null)
+                {
+                    order.Products.Add(new Product(f.ProductId, f.Name, f.Description, f.Price * quantity, f.Quantity = quantity)); ;
+                }
+
+                Console.WriteLine();
+                Console.Write("Deseja selecionar outro produto da lista? (s/n): ");
+                controle = char.Parse(Console.ReadLine()!);
+
+            }
+            Console.WriteLine();
+            FormatTitles("Apresentado os produtos escolhidos");
+
+            foreach (Product product in order.Products)
+            {
+
+                Console.WriteLine("Id: " + product.ProductId);
+                Console.WriteLine("Nome: " + product.Name);
+                Console.WriteLine("Descrição: " + product.Description);
+                Console.WriteLine("Preço: R$" + product.Price.ToString("F2", CultureInfo.InvariantCulture));
+                Console.WriteLine("Quantidade: " + product.Quantity);
+                Console.WriteLine();
+            }
         }
     }
 

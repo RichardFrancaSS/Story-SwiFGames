@@ -6,7 +6,7 @@ namespace SwiFGames.Entities
         public DateTime Moment { get; set; }
         Status Status { get; set; }
         Customer? Customer { get; set; }
-        List<Product> Products { get; set; } = new List<Product>();
+        public  List<Product> Products { get; set; } = new List<Product>();
 
         public Order()
         {
