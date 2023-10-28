@@ -1,5 +1,6 @@
 ﻿using SwiFGames.Entities;
 using System.Globalization;
+using SwiFGames.Entities.Enums;
 
 namespace SwiFGames
 {
@@ -10,9 +11,10 @@ namespace SwiFGames
             BaseUser baseUsers = new BaseUser();
             RegisterUsersInTheBaseManually(baseUsers);
             Catalog catalog = new Catalog();
+            OrderHistory orderHistory = new OrderHistory();
             RegisterProductInCatalogManually(catalog);
             MainTitle();
-            MainMenu(baseUsers, catalog);
+            MainMenu(baseUsers, catalog, orderHistory);
         }
         public static void MainTitle()
         {
@@ -25,7 +27,7 @@ namespace SwiFGames
 ╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░░░░  ░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝╚═════╝░");
             Console.WriteLine("================================Seja Bem-Vindo!================================");
         }
-        public static void MainMenu(BaseUser baseUsers, Catalog catalog)
+        public static void MainMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory)
         {
 
             Console.WriteLine();
@@ -49,14 +51,14 @@ namespace SwiFGames
                     {
                         Console.Clear();
                         MainTitle();
-                        MainMenu(baseUsers, catalog);
+                        MainMenu(baseUsers, catalog, orderHistory);
                     }
 
                     break;
                 case 2:
                     Console.Clear();
                     MainTitle();
-                    LoginMenu(baseUsers, catalog);
+                    LoginMenu(baseUsers, catalog, orderHistory);
 
                     break;
                 default:
@@ -64,7 +66,7 @@ namespace SwiFGames
                     Thread.Sleep(2000);
                     Console.Clear();
                     MainTitle();
-                    MainMenu(baseUsers, catalog);
+                    MainMenu(baseUsers, catalog, orderHistory);
 
                     break;
             }
@@ -110,7 +112,7 @@ namespace SwiFGames
 
 
         }
-        public static void LoginMenu(BaseUser baseUsers, Catalog catalog)
+        public static void LoginMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory)
         {
             FormatTitles("Escolha uma Opção\n1 - Fazer login \n2 - Volta ao menu Principal");
             int optionLoginMenu = int.Parse(Console.ReadLine()!);
@@ -149,7 +151,7 @@ namespace SwiFGames
                             MainTitle();
                             Console.WriteLine();
                             FormatTitles("Customer Menu");
-                            CustomerMenu(catalog, client);
+                            CustomerMenu(catalog, client, orderHistory);
                         }
                     }
                     else
@@ -165,14 +167,14 @@ namespace SwiFGames
                     Thread.Sleep(2000);
                     Console.Clear();
                     MainTitle();
-                    LoginMenu(baseUsers, catalog);
+                    LoginMenu(baseUsers, catalog, orderHistory);
                 }
             }
             else
             {
                 Console.Clear();
                 MainTitle();
-                MainMenu(baseUsers, catalog);
+                MainMenu(baseUsers, catalog, orderHistory);
             }
 
         }
@@ -248,7 +250,7 @@ namespace SwiFGames
             Console.Clear();
 
         }
-        public static void CustomerMenu(Catalog catalog, Customer client)
+        public static void CustomerMenu(Catalog catalog, Customer client, OrderHistory orderHistory)
         {
             Console.WriteLine();
             Console.WriteLine("1 - Ver Catalogo\n2 - Ver Pedidos\n3 - Histórico de Compras\n");
@@ -270,19 +272,21 @@ namespace SwiFGames
                     char op = char.Parse(Console.ReadLine()!);
                     if (op == 's')
                     {
-                        Console.Clear();
-                        MainTitle();
-                        RegisterOrder(catalog, client);
+                        RegisterOrder(catalog, client, orderHistory);
                     }
                     else if (op == 'n')
                     {
                         Console.Clear();
                         MainTitle();
-                        CustomerMenu(catalog, client);
+                        CustomerMenu(catalog, client, orderHistory);
                     }
                     break;
                 case 2:
-
+                    Console.Clear();
+                    MainTitle();
+                    Console.WriteLine();
+                    FormatTitles("Dados do Seu Pedido");
+                    Console.WriteLine(orderHistory);
                     break;
             }
         }
@@ -297,7 +301,7 @@ namespace SwiFGames
             catalog.AddToTheCatalog(p3);
             catalog.AddToTheCatalog(p4);
         }
-        public static void RegisterOrder(Catalog catalog, Customer client)
+        public static void RegisterOrder(Catalog catalog, Customer client, OrderHistory orderHistory)
         {
             char controle;
             Console.Write("Deseja selecionar um produto da lista? (s/n): ");
@@ -327,19 +331,28 @@ namespace SwiFGames
                 controle = char.Parse(Console.ReadLine()!);
 
             }
-            Console.WriteLine();
-            FormatTitles("Apresentado os produtos escolhidos");
+            FormatTitles("Aguarde um instante que estamos Finalizando seu Pedido");
+            StatusOrder status = Enum.Parse<StatusOrder>("Processing");
+            Random aleatorio = new Random();
+                int auxId = aleatorio.Next(100);
 
-            foreach (Product product in order.Products)
+            while (orderHistory.orders.Find(x => x.OrderId == auxId) != null)
             {
-
-                Console.WriteLine("Id: " + product.ProductId);
-                Console.WriteLine("Nome: " + product.Name);
-                Console.WriteLine("Descrição: " + product.Description);
-                Console.WriteLine("Preço: R$" + product.Price.ToString("F2", CultureInfo.InvariantCulture));
-                Console.WriteLine("Quantidade: " + product.Quantity);
-                Console.WriteLine();
+                auxId = aleatorio.Next(100);
             }
+                order.OrderId = auxId;
+                order.Moment = DateTime.Now;
+                order.Status = status;
+                orderHistory.AddOrder(order);
+                Thread.Sleep(4000);
+                FormatTitles("Pedido Realizado com Sucesso");
+                Thread.Sleep(3000);
+                Console.Clear();
+                MainTitle();
+                Console.WriteLine();
+                CustomerMenu(catalog, client, orderHistory);
+
+            
         }
     }
 

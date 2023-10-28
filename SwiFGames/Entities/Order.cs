@@ -3,9 +3,10 @@ namespace SwiFGames.Entities
 {
  internal class Order
     {
+        public int OrderId { get; set; }
         public DateTime Moment { get; set; }
-        Status Status { get; set; }
-        Customer? Customer { get; set; }
+        public StatusOrder Status { get; set; }
+        public Customer? Customer { get; set; }
         public  List<Product> Products { get; set; } = new List<Product>();
 
         public Order()
@@ -13,11 +14,12 @@ namespace SwiFGames.Entities
              
         }
 
-        public Order(DateTime moment, Status status, Customer? customer)
+        public Order(DateTime moment, StatusOrder status, Customer? customer, int orderId)
         {
             Moment = moment;
             Status = status;
             Customer = customer;
+            OrderId = orderId;
         }
         void AddProducttotheOrder(Product product)
         {
