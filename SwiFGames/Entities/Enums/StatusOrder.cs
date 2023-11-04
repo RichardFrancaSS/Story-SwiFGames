@@ -2,7 +2,7 @@
 {
     internal enum StatusOrder
     {
-        Pendin,
+        Pending,
         Processing, 
         Delivered 
     }

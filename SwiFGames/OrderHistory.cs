@@ -32,6 +32,9 @@ namespace SwiFGames
                 sb.Append("Status: ");
                 sb.Append(order.Status);
                 sb.AppendLine();
+                sb.Append("Cliente: ");
+                sb.Append(order.Customer.Name);
+                sb.AppendLine();
                 sb.AppendLine();
                 sb.Append("***********************");
                 sb.Append("Produtos no Carrinho: ");

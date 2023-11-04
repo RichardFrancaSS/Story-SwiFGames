@@ -141,7 +141,7 @@ namespace SwiFGames
                             Console.Clear();
                             MainTitle();
                             Console.WriteLine();
-                            FormatTitles("ADMINISTRATOR MENU");
+                            FormatTitles("Menu do Administrador");
 
                         }
                         else if (user.Category == customer)
@@ -150,8 +150,8 @@ namespace SwiFGames
                             Console.Clear();
                             MainTitle();
                             Console.WriteLine();
-                            FormatTitles("Customer Menu");
-                            CustomerMenu(catalog, client, orderHistory);
+                            FormatTitles("Menu do Cliente");
+                            CustomerMenu(baseUsers, catalog, orderHistory, client);
                         }
                     }
                     else
@@ -250,10 +250,10 @@ namespace SwiFGames
             Console.Clear();
 
         }
-        public static void CustomerMenu(Catalog catalog, Customer client, OrderHistory orderHistory)
+        public static void CustomerMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
             Console.WriteLine();
-            Console.WriteLine("1 - Ver Catalogo\n2 - Ver Pedidos\n3 - Histórico de Compras\n");
+            Console.WriteLine("1 - Ver Catalogo\n2 - Ver Pedidos\n3 - Histórico de Compras\n4 - Logout\n");
             Console.WriteLine();
             Console.Write("Digite a opção desejada: ");
             int optionCustomerMenu = int.Parse(Console.ReadLine()!);
@@ -272,13 +272,13 @@ namespace SwiFGames
                     char op = char.Parse(Console.ReadLine()!);
                     if (op == 's')
                     {
-                        RegisterOrder(catalog, client, orderHistory);
+                        RegisterOrder(baseUsers, catalog, orderHistory, customer);
                     }
                     else if (op == 'n')
                     {
                         Console.Clear();
                         MainTitle();
-                        CustomerMenu(catalog, client, orderHistory);
+                        CustomerMenu(baseUsers, catalog, orderHistory, customer);
                     }
                     break;
                 case 2:
@@ -286,7 +286,18 @@ namespace SwiFGames
                     MainTitle();
                     Console.WriteLine();
                     FormatTitles("Dados do Seu Pedido");
-                    Console.WriteLine(orderHistory);
+                    OrdersInProgress(baseUsers, catalog, orderHistory, customer);
+                    FinalizePayment(baseUsers, catalog, orderHistory, customer);
+                    break;
+                case 3:
+                    Console.Clear();
+                    MainTitle();
+                    PurchaseHistoric(baseUsers, catalog, orderHistory, customer);
+                    break;
+                case 4:
+                    Console.Clear();
+                    MainTitle();
+                    MainMenu(baseUsers, catalog, orderHistory);
                     break;
             }
         }
@@ -301,7 +312,7 @@ namespace SwiFGames
             catalog.AddToTheCatalog(p3);
             catalog.AddToTheCatalog(p4);
         }
-        public static void RegisterOrder(Catalog catalog, Customer client, OrderHistory orderHistory)
+        public static void RegisterOrder(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
             char controle;
             Console.Write("Deseja selecionar um produto da lista? (s/n): ");
@@ -334,26 +345,160 @@ namespace SwiFGames
             FormatTitles("Aguarde um instante que estamos Finalizando seu Pedido");
             StatusOrder status = Enum.Parse<StatusOrder>("Processing");
             Random aleatorio = new Random();
-                int auxId = aleatorio.Next(100);
+            int auxId = aleatorio.Next(100);
 
             while (orderHistory.orders.Find(x => x.OrderId == auxId) != null)
             {
                 auxId = aleatorio.Next(100);
             }
-                order.OrderId = auxId;
-                order.Moment = DateTime.Now;
-                order.Status = status;
-                orderHistory.AddOrder(order);
-                Thread.Sleep(4000);
-                FormatTitles("Pedido Realizado com Sucesso");
+            order.OrderId = auxId;
+            order.Moment = DateTime.Now;
+            order.Status = status;
+            order.Customer = customer;
+            orderHistory.AddOrder(order);
+            Thread.Sleep(4000);
+            FormatTitles("Pedido Realizado com Sucesso");
+            Console.WriteLine("Obrigado por comprar conosco!!!!! ");
+            Thread.Sleep(3000);
+            Console.Clear();
+            MainTitle();
+            Console.WriteLine();
+            CustomerMenu(baseUsers, catalog, orderHistory, customer);
+
+
+        }
+        public static void FinalizePayment(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
+        {
+            Console.WriteLine();
+            FormatTitles("Deseeja Finalizar o pedido? (s/n): ");
+            Console.WriteLine("Digite a opção desejada: ");
+            char op = char.Parse(Console.ReadLine()!);
+            Console.WriteLine();
+            switch (op)
+            {
+                case 's':
+                    Console.WriteLine("Informe o ID do Pedido: ");
+                    int id = int.Parse(Console.ReadLine()!);
+                    Console.WriteLine();
+                    FormatTitles("Aguarde um Instante, Pagamento esta sendo processado!!!");
+
+                    StatusOrder status = new StatusOrder();
+                    status = Enum.Parse<StatusOrder>("Delivered");
+
+                    foreach (Order orderHistoryList in orderHistory.orders)
+                    {
+                        if (orderHistoryList.OrderId == id)
+                        {
+                            orderHistoryList.Status = status;
+                            break;
+                        }
+                    }
+                    Thread.Sleep(3000);
+                    FormatTitles("Pagamento Realizado com sucesso!!!");
+                    Thread.Sleep(3000);
+                    Console.Clear();
+                    MainTitle();
+                    CustomerMenu(baseUsers, catalog, orderHistory, customer);
+
+                    break;
+                case 'n':
+                    Console.Clear();
+                    MainTitle();
+                    CustomerMenu(baseUsers, catalog, orderHistory, customer);
+                    break;
+
+            }
+
+        }
+        public static void PurchaseHistoric(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
+        {
+            StatusOrder status = new StatusOrder();
+            status = Enum.Parse<StatusOrder>("Delivered");
+
+            if (orderHistory.orders.FirstOrDefault(x => x.Customer.UserId == customer.UserId) != null &&
+                orderHistory.orders.FirstOrDefault(x => x.Status == status) != null)
+            {
+                foreach (Order order in orderHistory.orders)
+                {
+                    if (order.Status == status)
+                    {
+                        if (order.Status == status && order.Customer.UserId == customer.UserId)
+                        {
+
+                            Console.Write("Id do Pedido: " + order.OrderId + "\n");
+                            Console.Write("Data do pedido: " + order.Moment + "\n");
+                            Console.Write("Status: " + order.Status + "\n");
+                            Console.Write("Cliente: " + order.Customer.Name + "\n");
+                            FormatTitles("*** Produtos Adqueridos nesse pedido: ****");
+                            foreach (Product product in order.Products)
+                            {
+                                Console.Write("Produto: " + product.Name + ", R$ " + product.Price.ToString("F2", CultureInfo.InvariantCulture) + "\n");
+
+                            }
+                            Console.WriteLine();
+                        }
+
+                    }
+                }
+
+                Console.WriteLine();
+                Console.Write("Digite qualquer tecla para voltar ao menu principal: ");
+                Console.ReadLine();
+                Console.Clear();
+                MainTitle();
+                CustomerMenu(baseUsers, catalog, orderHistory, customer);
+            }
+
+            else
+            {
+                FormatTitles("Usúario ainda não Finalizou uma compra! Veja os pedidos no menu Principal");
                 Thread.Sleep(3000);
                 Console.Clear();
                 MainTitle();
-                Console.WriteLine();
-                CustomerMenu(catalog, client, orderHistory);
+                CustomerMenu(baseUsers, catalog, orderHistory, customer);
 
-            
+            }
         }
-    }
 
+        public static void OrdersInProgress(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
+        {
+            StatusOrder status = new StatusOrder();
+            status = Enum.Parse<StatusOrder>("Processing");
+
+            if (orderHistory.orders.FirstOrDefault(x => x.Customer.UserId == customer.UserId) != null &&
+                orderHistory.orders.FirstOrDefault(x => x.Status == status) != null)
+            {
+                foreach (Order order in orderHistory.orders)
+                {
+                    if (order.Status == status && order.Customer.UserId == customer.UserId)
+                    {
+
+                        Console.Write("Id do Pedido: " + order.OrderId + "\n");
+                        Console.Write("Data do pedido: " + order.Moment + "\n");
+                        Console.Write("Status: " + order.Status + "\n");
+                        Console.Write("Cliente: " + order.Customer.Name + "\n");
+                        FormatTitles("*** Produtos Adqueridos nesse pedido: ****");
+                        foreach (Product product in order.Products)
+                        {
+                            Console.Write("Produto: " + product.Name + ", R$ " + product.Price.ToString("F2", CultureInfo.InvariantCulture) + "\n");
+
+                        }
+                        Console.WriteLine();
+                    }
+
+                }
+
+            }
+            else
+            {
+                FormatTitles("Usúario ainda não possiu pedido! Para fazer um pedido acesse o catalogo da loja");
+                Thread.Sleep(3000);
+                Console.Clear();
+                MainTitle();
+                CustomerMenu(baseUsers, catalog, orderHistory, customer);
+            }
+        }
+
+    }
 }
+
