@@ -9,8 +9,20 @@ namespace SwiFGames.Entities
 
         public List<Product> products = new List<Product>();
 
-        public void AddToTheCatalog(Product product){ products.Add(product);}
-        public void RemoveTheCatalog(Product product){ products.Remove(product);}
+        public void AddProductToCatalog(Product product){ products.Add(product);}
+        public void RemoveProductToCatalog(Product product){ products.Remove(product);}
+        public void ChangeCatalogProduct(int id, string name, string description, double price)
+        {
+            foreach (Product p in products)
+            {
+                if (p.ProductId == id)
+                {
+                    p.Name = name;
+                    p.Description = description;
+                    p.Price = price;
+                }
+            }
+        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

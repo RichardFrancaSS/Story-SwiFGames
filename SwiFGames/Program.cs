@@ -1,6 +1,8 @@
 ﻿using SwiFGames.Entities;
 using System.Globalization;
 using SwiFGames.Entities.Enums;
+using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace SwiFGames
 {
@@ -138,10 +140,13 @@ namespace SwiFGames
                     {
                         if (user.Category == administrador)
                         {
+
+                            Administrator administrator = new Administrator(user.UserId, user.Name, user.Email, user.Phone, user.Password, user.Category);
                             Console.Clear();
                             MainTitle();
                             Console.WriteLine();
                             FormatTitles("Menu do Administrador");
+                            AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
 
                         }
                         else if (user.Category == customer)
@@ -245,11 +250,100 @@ namespace SwiFGames
             Console.WriteLine(text);
             Console.WriteLine(asterisco + "\n");
         }
-        public static void AdministratorMenu(BaseUser user)
+        public static void AdministratorMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Administrator administrator)
         {
-            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("1 - Produtos\n2 - Relatórios\n3 - Logout\n");
+            Console.WriteLine();
+            Console.Write("Digite a opção desejada: ");
+            int optionCustomerMenu = int.Parse(Console.ReadLine()!);
+            switch (optionCustomerMenu)
+            {
+                case 1:
+                    Console.Clear();
+                    MainTitle();
+                    Console.WriteLine();
+                    Console.WriteLine("1 - Cadastrar um novo produto\n2 - Remover produto\n3 - Alterar dados de um produto\n");
+                    Console.WriteLine("Digite a opção desejada: ");
+                    int op = int.Parse(Console.ReadLine()!);
+                    if (op == 1)
+                    {
+                        Console.WriteLine();
+                        Random aleatorio = new Random();
+                        int auxId = aleatorio.Next(100);
 
+                        while (catalog.products.FirstOrDefault(x => x.ProductId == auxId) != null)
+                        {
+                            auxId = aleatorio.Next(100);
+                        }
+
+                        Console.Write("Digite o nome do produto: ");
+                        string name = Console.ReadLine()!;
+                        Console.Write("Digite a descrição do produto: ");
+                        string description = Console.ReadLine()!; 
+                        Console.Write("Digite o preço do produto: ");
+                        double price = double.Parse(Console.ReadLine(),CultureInfo.InvariantCulture!);
+
+                        catalog.AddProductToCatalog(new Product(auxId, name, description, price));
+                        Console.WriteLine("aperte qualqer tecla pra voltar");
+                        Console.ReadLine();
+                        Console.Clear();
+                        MainTitle();
+                        AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
+                    }
+                    else if (op == 2)
+                    {
+                        Console.Clear();
+                        MainTitle();
+                        Console.WriteLine(catalog);
+                    }
+                    else if (op == 3)
+                    {
+                        Console.Clear();
+                        MainTitle();
+                        Console.WriteLine(catalog);
+                        Console.WriteLine();
+                        FormatTitles("ALterando os dados de um produto!!");
+                        Console.Write("Digite um Id do produto para ser alterado: ");
+                        int id = int.Parse(Console.ReadLine()!);
+                        Console.Write("Digite o nome do produto: ");
+                        string name = Console.ReadLine()!;
+                        Console.Write("Digite a descrição do produto: ");
+                        string description = Console.ReadLine()!;
+                        Console.Write("Digite o preço do produto: ");
+                        double price = double.Parse(Console.ReadLine()!, CultureInfo.InvariantCulture!);
+
+
+                        if (catalog.products.FirstOrDefault(x => x.ProductId == id) != null)
+                        {
+                            catalog.ChangeCatalogProduct(id, name, description, price);
+                        }
+                        Console.WriteLine("aperte qualqer tecla pra voltar");
+                        Console.ReadLine();
+                        AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
+
+                    }
+                    else 
+                    { 
+                        Console.Clear();
+                        MainTitle();
+                        AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
+                    }  
+                    break;
+                case 2:
+                    Console.Clear();
+                    MainTitle();
+                    break;
+                case 3:
+                    Console.Clear();
+                    MainTitle();
+                    break;
+            }
         }
+
+    
+
+
         public static void CustomerMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
             Console.WriteLine();
@@ -307,10 +401,10 @@ namespace SwiFGames
             Product p2 = new Product(2, "The Last of US", "Zumbis e Terror", 600.00, 1);
             Product p3 = new Product(3, "Resident Evill Village", "MEDO MEDO MEDO MEDO MEDO MEDO MEDO!!!", 700.00, 1);
             Product p4 = new Product(4, "Fifa 24", "Futebol de cria", 800.00, 1);
-            catalog.AddToTheCatalog(p1);
-            catalog.AddToTheCatalog(p2);
-            catalog.AddToTheCatalog(p3);
-            catalog.AddToTheCatalog(p4);
+            catalog.AddProductToCatalog(p1);
+            catalog.AddProductToCatalog(p2);
+            catalog.AddProductToCatalog(p3);
+            catalog.AddProductToCatalog(p4);
         }
         public static void RegisterOrder(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
@@ -501,4 +595,5 @@ namespace SwiFGames
 
     }
 }
+
 

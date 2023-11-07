@@ -1,13 +1,12 @@
-﻿using SwiFGames.Entities;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 
-namespace SwiFGames
+namespace SwiFGames.Entities
 {
     internal class OrderHistory
     {
-       public List<Order> orders { get; set; } = new List<Order>();
-        
+        public List<Order> orders { get; set; } = new List<Order>();
+
 
         public void AddOrder(Order order)
         {
@@ -22,11 +21,11 @@ namespace SwiFGames
             StringBuilder sb = new StringBuilder();
             foreach (Order order in orders)
             {
-               
+
                 sb.Append("ID: ");
                 sb.Append(order.OrderId);
                 sb.AppendLine();
-                sb.Append ("Data do Pedido: ");
+                sb.Append("Data do Pedido: ");
                 sb.Append(order.Moment);
                 sb.AppendLine();
                 sb.Append("Status: ");

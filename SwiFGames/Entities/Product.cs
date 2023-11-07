@@ -20,6 +20,13 @@
             Price = price;
             Quantity = quantity;
         }
+        public Product(int id, string? name, string? description, double price)
+        {
+            ProductId = id;
+            Name = name;
+            Description = description;
+            Price = price;
+        }
     }
 
     
