@@ -1,25 +1,27 @@
 ﻿using System.Text;
 using System.Globalization;
+using SwiFGames.Entities;
 
-namespace SwiFGames.Entities
-   
+namespace SwiFGames.Controlers
+
 {
     internal class Catalog
     {
 
         public List<Product> products = new List<Product>();
 
-        public void AddProductToCatalog(Product product){ products.Add(product);}
-        public void RemoveProductToCatalog(Product product){ products.Remove(product);}
-        public void ChangeCatalogProduct(int id, string name, string description, double price)
+        public void AddProductToCatalog(Product product) { products.Add(product); }
+        public void RemoveProductToCatalog(Product product) { products.Remove(product); }
+        public void ChangeCatalogProduct(Product product)
         {
             foreach (Product p in products)
             {
-                if (p.ProductId == id)
+                if (p.ProductId == product.ProductId)
                 {
-                    p.Name = name;
-                    p.Description = description;
-                    p.Price = price;
+                    p.Name = product.Name;
+                    p.Description = product.Description;
+                    p.Price = product.Price;
+                    break;
                 }
             }
         }

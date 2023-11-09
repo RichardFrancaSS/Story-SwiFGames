@@ -1,7 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
+using SwiFGames.Entities;
 
-namespace SwiFGames.Entities
+namespace SwiFGames.Controlers
 {
     internal class OrderHistory
     {

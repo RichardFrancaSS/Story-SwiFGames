@@ -1,11 +1,13 @@
 ﻿using System.Text;
-namespace SwiFGames.Entities
+using SwiFGames.Entities;
+
+namespace SwiFGames.Controlers
 {
     internal class BaseUser
     {
         public List<User> users { get; set; } = new List<User>();
-        public void AddNewUserAtBase(User user){ users.Add(user);}
-        public void RemoveUserAtBase(User user){ users.Remove(user);}
+        public void AddNewUserAtBase(User user) { users.Add(user); }
+        public void RemoveUserAtBase(User user) { users.Remove(user); }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
