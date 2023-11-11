@@ -4,6 +4,7 @@ using SwiFGames.Entities.Enums;
 using System.Diagnostics;
 using System.Xml.Linq;
 using SwiFGames.Controlers;
+using System.Xml.Schema;
 
 namespace SwiFGames
 {
@@ -27,7 +28,7 @@ namespace SwiFGames
 █─▄▄▄▄█▄─█▀▀▀█─▄█▄─▄█▄─▄▄─███─▄▄▄▄██▀▄─██▄─▀█▀─▄█▄─▄▄─█─▄▄▄▄█
 █▄▄▄▄─██─█─█─█─███─███─▄█████─██▄─██─▀─███─█▄█─███─▄█▀█▄▄▄▄─█
 ▀▄▄▄▄▄▀▀▄▄▄▀▄▄▄▀▀▄▄▄▀▄▄▄▀▀▀▀▀▄▄▄▄▄▀▄▄▀▄▄▀▄▄▄▀▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀");
-            Console.WriteLine("================================Seja Bem-Vindo!================================");
+            FormatTitles("================================Seja Bem-Vindo!================================");
         }
         public static void MainMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory)
         {
@@ -346,7 +347,7 @@ namespace SwiFGames
                             if (option == 3)
                             {
                                 Console.Write("Price: ");
-                                product.Price = double.Parse(Console.ReadLine()!,CultureInfo.InvariantCulture);
+                                product.Price = double.Parse(Console.ReadLine()!, CultureInfo.InvariantCulture);
 
                             }
                             catalog.ChangeCatalogProduct(product);
@@ -356,7 +357,8 @@ namespace SwiFGames
                             Console.ReadLine();
                             MainTitle();
                             AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
-                        }else
+                        }
+                        else
                         {
                             Console.WriteLine("Id não localizado na Base!");
                             Thread.Sleep(2000);
@@ -385,6 +387,7 @@ namespace SwiFGames
                 case 2:
 
                     MainTitle();
+                    Reports(baseUsers, catalog, orderHistory, administrator);
                     break;
                 case 3:
                     MainTitle();
@@ -404,7 +407,7 @@ namespace SwiFGames
         public static void CustomerMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
             Console.WriteLine();
-            Console.WriteLine("1 - Ver Catalogo\n2 - Ver Pedidos\n3 - Histórico de Compras\n4 - Logout\n");
+            Console.WriteLine("1 - Fazer Pedido\n2 - Ver Pedidos\n3 - Histórico de Compras\n4 - Logout\n");
             Console.WriteLine();
             Console.Write("Digite a opção desejada: ");
             int optionCustomerMenu = int.Parse(Console.ReadLine()!);
@@ -412,26 +415,9 @@ namespace SwiFGames
             {
                 case 1:
 
+
                     MainTitle();
-                    FormatTitles("CATÁLOGO DA LOJA");
-                    Console.WriteLine(catalog);
-
-                    Console.WriteLine();
-                    FormatTitles("Deseja fazer um pedido? (s/n)");
-                    Console.WriteLine();
-                    Console.Write("Digite a opção desejada: ");
-                    char op = char.Parse(Console.ReadLine()!);
-                    if (op == 's')
-                    {
-
-                        RegisterOrder(baseUsers, catalog, orderHistory, customer);
-                    }
-                    else if (op == 'n')
-                    {
-
-                        MainTitle();
-                        CustomerMenu(baseUsers, catalog, orderHistory, customer);
-                    }
+                    RegisterOrder(baseUsers, catalog, orderHistory, customer);
                     break;
                 case 2:
 
@@ -466,11 +452,19 @@ namespace SwiFGames
         }
         public static void RegisterOrder(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
+            FormatTitles("CATÁLOGO DA LOJA");
+            Console.WriteLine(catalog);
+            Console.WriteLine();
             char controle;
             Console.Write("Deseja selecionar um produto da lista? (s/n): ");
             Console.WriteLine();
             Console.Write("Selecione a opção desejada: ");
             controle = char.Parse(Console.ReadLine()!);
+            if (controle == 'n')
+            {
+                MainTitle();
+                CustomerMenu(baseUsers, catalog, orderHistory, customer);
+            }
             Product f;
             Order order = new Order();
             while (controle == 's')
@@ -566,17 +560,17 @@ namespace SwiFGames
         {
             StatusOrder status = new StatusOrder();
             status = Enum.Parse<StatusOrder>("Delivered");
-
-            if (orderHistory.orders.FirstOrDefault(x => x.Customer.UserId == customer.UserId) != null &&
+            Console.WriteLine("==========================================================================");
+            if (orderHistory.orders.FirstOrDefault(x => x.Customer?.UserId == customer.UserId) != null &&
                 orderHistory.orders.FirstOrDefault(x => x.Status == status) != null)
             {
                 foreach (Order order in orderHistory.orders)
                 {
                     if (order.Status == status)
                     {
-                        if (order.Status == status && order.Customer.UserId == customer.UserId)
+                        if (order.Status == status && order.Customer?.UserId == customer.UserId)
                         {
-
+                            double valorTotalDoPedido = 0.00;
                             Console.Write("Id do Pedido: " + order.OrderId + "\n");
                             Console.Write("Data do pedido: " + order.Moment + "\n");
                             Console.Write("Status: " + order.Status + "\n");
@@ -585,9 +579,11 @@ namespace SwiFGames
                             foreach (Product product in order.Products)
                             {
                                 Console.Write("Produto: " + product.Name + ", R$ " + product.Price.ToString("F2", CultureInfo.InvariantCulture) + "\n");
-
+                                valorTotalDoPedido += product.Price;
                             }
                             Console.WriteLine();
+                            FormatTitles("***Valor total do Pedido: " + "R$" + valorTotalDoPedido.ToString("F2", CultureInfo.InvariantCulture) + "***");
+                            Console.WriteLine("===================================================================================");
                         }
 
                     }
@@ -611,20 +607,19 @@ namespace SwiFGames
 
             }
         }
-
         public static void OrdersInProgress(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
             StatusOrder status = new StatusOrder();
             status = Enum.Parse<StatusOrder>("Processing");
-
-            if (orderHistory.orders.FirstOrDefault(x => x.Customer.UserId == customer.UserId) != null &&
+            Console.WriteLine("==========================================================================");
+            if (orderHistory.orders.FirstOrDefault(x => x.Customer?.UserId == customer.UserId) != null &&
                 orderHistory.orders.FirstOrDefault(x => x.Status == status) != null)
             {
                 foreach (Order order in orderHistory.orders)
                 {
-                    if (order.Status == status && order.Customer.UserId == customer.UserId)
+                    if (order.Status == status && order.Customer?.UserId == customer.UserId)
                     {
-
+                        double valorTotalDoPedido = 0.00;
                         Console.Write("Id do Pedido: " + order.OrderId + "\n");
                         Console.Write("Data do pedido: " + order.Moment + "\n");
                         Console.Write("Status: " + order.Status + "\n");
@@ -633,9 +628,11 @@ namespace SwiFGames
                         foreach (Product product in order.Products)
                         {
                             Console.Write("Produto: " + product.Name + ", R$ " + product.Price.ToString("F2", CultureInfo.InvariantCulture) + "\n");
-
+                            valorTotalDoPedido += product.Price;
                         }
                         Console.WriteLine();
+                        FormatTitles("***Valor total do Pedido: " + "R$" + valorTotalDoPedido.ToString("F2", CultureInfo.InvariantCulture) + "***");
+                        Console.WriteLine("======================================================================================");
                     }
 
                 }
@@ -650,7 +647,48 @@ namespace SwiFGames
                 CustomerMenu(baseUsers, catalog, orderHistory, customer);
             }
         }
+        public static void Reports(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Administrator administrator)
+        {
+            Console.WriteLine("1 - Total de Vendas por Clientes\n2 - Produtos Mais Comprados\n3 - Produtos Menos Comprados\n4 - Total de Vendas no Período");
+            int op = int.Parse(Console.ReadLine()!);
+            double totalComprado = 0.00;
+            if (op == 1)
+            {
+                FormatTitles("Relatório de vendas por cliente: ");
+                foreach (User user in baseUsers.users)
+                {
+                    if (orderHistory.orders.FirstOrDefault(x => x.Customer?.UserId == user.UserId) != null)
+                    {
+                        foreach (Order order in orderHistory.orders)
+                        {
 
+                            foreach (Product product in order.Products)
+                            {
+                                totalComprado += product.Price;
+                            }
+                        }
+                        Console.WriteLine("Nome do Cliente: " + user.Name + "Total comprado: " + totalComprado.ToString("F2", CultureInfo.InvariantCulture)); ;
+                    }
+                }
+                Console.WriteLine("aperte qualqer tecla pra voltar");
+                Console.ReadLine();
+                MainTitle();
+                AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
+
+            }
+            if (op == 2)
+            {
+                //produtos mais comprados
+            }
+            if (op == 3)
+            {
+                //produtos menos comprados
+            }
+            if (op == 4)
+            {
+                //total de vendas no periodo
+            }
+        }
     }
 }
 
