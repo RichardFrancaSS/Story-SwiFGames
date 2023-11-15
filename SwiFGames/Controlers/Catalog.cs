@@ -28,7 +28,7 @@ namespace SwiFGames.Controlers
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("*******************************");
+            sb.Append("========================================================================");
             foreach (Product prod in products)
             {
                 sb.AppendLine();
@@ -40,7 +40,7 @@ namespace SwiFGames.Controlers
                 sb.AppendLine(prod.Description);
                 sb.Append("Price: ");
                 sb.AppendLine(prod.Price.ToString("F2", CultureInfo.InvariantCulture));
-                sb.Append("*******************************");
+                sb.Append("========================================================================");
             }
             return sb.ToString();
 

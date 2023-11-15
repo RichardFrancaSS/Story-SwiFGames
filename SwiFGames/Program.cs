@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using SwiFGames.Controlers;
 using System.Xml.Schema;
+using System.Linq;
 
 namespace SwiFGames
 {
@@ -138,7 +139,6 @@ namespace SwiFGames
 
                             MainTitle();
                             Console.WriteLine();
-                            FormatTitles("Menu do Administrador");
                             AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
 
                         }
@@ -148,7 +148,6 @@ namespace SwiFGames
 
                             MainTitle();
                             Console.WriteLine();
-                            FormatTitles("Menu do Cliente");
                             CustomerMenu(baseUsers, catalog, orderHistory, client);
                         }
                     }
@@ -245,6 +244,7 @@ namespace SwiFGames
         }
         public static void AdministratorMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Administrator administrator)
         {
+            FormatTitles("Menu do Administrador");
             Console.WriteLine();
             Console.WriteLine("1 - Produtos\n2 - Relatórios\n3 - Usuários Cadastrados\n4 - Logout\n");
             Console.WriteLine();
@@ -256,12 +256,16 @@ namespace SwiFGames
 
                     MainTitle();
                     Console.WriteLine();
+                    FormatTitles("Menu - Opções de Produto");
+                    Console.WriteLine();
                     Console.WriteLine("1 - Cadastrar um novo produto\n2 - Remover produto\n3 - Alterar dados de um produto\n4 - ver catalogo");
                     Console.WriteLine("Digite a opção desejada: ");
                     int op = int.Parse(Console.ReadLine()!);
                     if (op == 1)
                     {
                         MainTitle();
+                        Console.WriteLine();
+                        FormatTitles("Cadastrando um novo Produto");
                         Console.WriteLine();
                         Random aleatorio = new Random();
                         int auxId = aleatorio.Next(100);
@@ -291,6 +295,9 @@ namespace SwiFGames
                     {
 
                         MainTitle();
+                        Console.WriteLine();
+                        FormatTitles("Removendo um produto");
+                        Console.WriteLine();
                         Console.WriteLine(catalog);
                         Console.WriteLine();
                         FormatTitles("Removendo um produto!!");
@@ -320,6 +327,9 @@ namespace SwiFGames
                     {
 
                         MainTitle();
+                        Console.WriteLine();
+                        FormatTitles("Alterando um Produto");
+                        Console.WriteLine();
                         Console.WriteLine(catalog);
                         Console.WriteLine();
                         FormatTitles("Alterando os dados de um produto!!");
@@ -387,6 +397,8 @@ namespace SwiFGames
                 case 2:
 
                     MainTitle();
+                    FormatTitles("Menu - Opções de Relatório");
+                    Console.WriteLine();
                     Reports(baseUsers, catalog, orderHistory, administrator);
                     break;
                 case 3:
@@ -406,6 +418,7 @@ namespace SwiFGames
         }
         public static void CustomerMenu(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
+            FormatTitles("Menu do Cliente");
             Console.WriteLine();
             Console.WriteLine("1 - Fazer Pedido\n2 - Ver Pedidos\n3 - Histórico de Compras\n4 - Logout\n");
             Console.WriteLine();
@@ -465,6 +478,14 @@ namespace SwiFGames
                 MainTitle();
                 CustomerMenu(baseUsers, catalog, orderHistory, customer);
             }
+            else if (controle != 'n' && controle != 's')
+            {
+                Console.WriteLine();
+                FormatTitles("Opção Invalida");
+                Thread.Sleep(2000);
+                MainTitle();
+                CustomerMenu(baseUsers, catalog, orderHistory, customer);
+            }
             Product f;
             Order order = new Order();
             while (controle == 's')
@@ -516,7 +537,7 @@ namespace SwiFGames
         public static void FinalizePayment(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Customer customer)
         {
             Console.WriteLine();
-            FormatTitles("Deseeja Finalizar o pedido? (s/n): ");
+            FormatTitles("Deseja Finalizar o pedido? (s/n): ");
             Console.WriteLine("Digite a opção desejada: ");
             char op = char.Parse(Console.ReadLine()!);
             Console.WriteLine();
@@ -649,47 +670,124 @@ namespace SwiFGames
         }
         public static void Reports(BaseUser baseUsers, Catalog catalog, OrderHistory orderHistory, Administrator administrator)
         {
-            Console.WriteLine("1 - Total de Vendas por Clientes\n2 - Produtos Mais Comprados\n3 - Produtos Menos Comprados\n4 - Total de Vendas no Período");
+            Console.WriteLine("1 - Total de Vendas por Clientes\n2 - Total de vendas por Produtos\n3 - Total de Pedidos não finalizados por cliente");
             int op = int.Parse(Console.ReadLine()!);
-            double totalComprado = 0.00;
+            Console.WriteLine();
+            double totalVendido = 0.00;
             if (op == 1)
             {
+                MainTitle();
+                Console.WriteLine();
+                StatusOrder status = Enum.Parse<StatusOrder>("Delivered");
                 FormatTitles("Relatório de vendas por cliente: ");
+                Console.WriteLine();
+                Console.WriteLine("========================================================================");
+
                 foreach (User user in baseUsers.users)
                 {
-                    if (orderHistory.orders.FirstOrDefault(x => x.Customer?.UserId == user.UserId) != null)
+                    foreach (Order order in orderHistory.orders)
                     {
-                        foreach (Order order in orderHistory.orders)
+                        if (order.Customer!.UserId == user.UserId && order.Status == status)
                         {
 
                             foreach (Product product in order.Products)
                             {
-                                totalComprado += product.Price;
+                                totalVendido += product.Price;
+                            }
+                            if (totalVendido != 0)
+                            {
+                                Console.WriteLine("Nome do Cliente: " + user.Name + ", Total vendido: R$ " + totalVendido.ToString("F2", CultureInfo.InvariantCulture));
+                                Console.WriteLine("========================================================================");
                             }
                         }
-                        Console.WriteLine("Nome do Cliente: " + user.Name + "Total comprado: " + totalComprado.ToString("F2", CultureInfo.InvariantCulture)); ;
+                        totalVendido = 0;
                     }
+
                 }
+                Console.WriteLine();
                 Console.WriteLine("aperte qualqer tecla pra voltar");
                 Console.ReadLine();
                 MainTitle();
                 AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
 
             }
-            if (op == 2)
+            else if (op == 2)
             {
-                //produtos mais comprados
+                MainTitle();
+                Console.WriteLine();
+                FormatTitles("**RELATÓRIO DE VENDAS POR PRODUTO**");
+                StatusOrder status = Enum.Parse<StatusOrder>("Delivered");
+                int totalPerProduct = 0;
+                double valueTotalSaledPerProduct = 0.00;
+
+                Console.WriteLine("=====================================================");
+                foreach (Product product in catalog.products)
+                {
+                    foreach (Order order in orderHistory.orders)
+                    {
+                        foreach (Product auxProduct in order.Products)
+                        {
+                            if (auxProduct.ProductId == product.ProductId && order.Status == status)
+                            {
+                                totalPerProduct += product.Quantity;
+                                valueTotalSaledPerProduct = product.Price * totalPerProduct;
+                            }
+                        }
+                    }
+                    if (totalPerProduct != 0)
+                    {
+                        Console.WriteLine("Nome do Produto: "
+                                            + product.Name
+                                            + "\nQuantidade Vendido: "
+                                            + totalPerProduct + "\nValor Total Vendido: R$ "
+                                            + valueTotalSaledPerProduct.ToString("F2", CultureInfo.InvariantCulture));
+                        Console.WriteLine("=====================================================");
+                        totalPerProduct = 0;
+                    }
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Digite qualquer tecla para voltar ao menu principal: ");
+                Console.ReadLine();
+                MainTitle();
+                AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
             }
-            if (op == 3)
+            else if (op == 3)
             {
-                //produtos menos comprados
-            }
-            if (op == 4)
-            {
-                //total de vendas no periodo
+                MainTitle();
+                Console.WriteLine();
+                FormatTitles("Relatório de Pedidos não finalizados por cliente");
+                StatusOrder status = Enum.Parse<StatusOrder>("Delivered");
+                int totalUnfinishedOrders = 0;
+                Console.WriteLine("========================================================================");
+
+                foreach (User user in baseUsers.users)
+                {
+                    foreach (Order order in orderHistory.orders)
+                    {
+                        if (order.Customer!.UserId == user.UserId && order.Status != status)
+                        { 
+                            totalUnfinishedOrders++;
+                        }
+                    }
+                    if (totalUnfinishedOrders != 0)
+                    {
+                        Console.WriteLine("Nome do Cliente: " + user.Name + "\n" +
+                        "Quantidade: " + totalUnfinishedOrders + " unidades");
+                        Console.WriteLine("========================================================================");
+                    }
+                    totalUnfinishedOrders = 0;
+                }
+                Console.WriteLine();
+                Console.WriteLine("Aperte qualquer tecla para voltar: ");
+                Console.ReadLine();
+                MainTitle();
+                AdministratorMenu(baseUsers, catalog, orderHistory, administrator);
+
             }
         }
     }
 }
+
 
 
